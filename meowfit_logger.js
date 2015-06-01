@@ -1,7 +1,9 @@
 var Bean = require('ble-bean');
+var fs = require('fs');
 
 var intervalId;
 var connectedBean;
+var tempData = 0;
 var movement = false;
 
 var lastX = 0;
@@ -19,17 +21,30 @@ Bean.discover(function(bean){
     diffZ = Math.abs(z - lastZ);
 
     // check for movement
-    if( diffX < 0.4 && diffY < 0.4 && diffZ < 0.4){
+    if( diffX < 0.06 && diffY < 0.06 && diffZ < 0.06){
       movement = false;
     } else {
       movement = true;
     }
 
-    // output useful data to console
-    console.log("[received] " + status + " accell ( " + x + ", " + y + ", " + z + " )");
-    console.log("[diff] (" + diffX + ", " + diffY + ", " + diffZ + " )");
-    console.log("Movement: " + movement);
+    var now = new Date();
+    var jsonDate = now.toJSON();
 
+    var data = {
+      "datetime" : jsonDate,
+      "diffX" : diffX,
+      "diffY" : diffY,
+      "diffZ" : diffZ,
+      "movement" : movement,
+      "temp" : tempData
+    };
+
+    // output useful data to console
+    console.log(data);
+
+    //write to log file
+    fs.appendFile('log.txt', JSON.stringify(data, null, 4), function(err){
+    })
 
     // update the last known values
     lastX = x;
@@ -40,7 +55,7 @@ Bean.discover(function(bean){
 
   bean.on("temp", function(temp, valid){
     var status = valid ? "valid" : "invalid";
-    console.log("[received] " + status + " temp:\t" + temp);
+    tempData = temp
   });
 
   bean.on("disconnect", function(){
@@ -49,16 +64,19 @@ Bean.discover(function(bean){
 
   bean.connectAndSetup(function(){
 
+    fs.writeFile('log.txt', '### Start Log ###\n', function(err){
+      if (err) throw err;
+      console.log('Logfile created');
+    });
+
     var readData = function() {
 
       bean.requestAccell(
       function(){
-        console.log("[request] accell data");
       });
 
       bean.requestTemp(
       function(){
-        console.log("[request] temp sent");
       });
 
     }
