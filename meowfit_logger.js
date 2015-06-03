@@ -1,3 +1,5 @@
+require('events').EventEmitter.prototype._maxListeners = 100;
+
 var Bean = require('ble-bean');
 var fs = require('fs');
 
@@ -39,7 +41,7 @@ Bean.discover(function(bean){
     console.log(data);
 
     //write to log file
-    fs.appendFile('log.csv', data, function(err){
+    fs.appendFile(global.logFile, data, function(err){
     })
 
     // update the last known values
@@ -55,12 +57,22 @@ Bean.discover(function(bean){
   });
 
   bean.on("disconnect", function(){
+    console.log("Bean Disconnected");
+
+    fs.appendFile(global.logFile, "Bean Disconnected", function(err){
+    })
+
     process.exit();
+
   });
 
   bean.connectAndSetup(function(){
 
-    fs.writeFile('log.txt', '### Start Log ###\n', function(err){
+    var now = new Date();
+    var jsonDate = now.toJSON();
+    global.logFile = jsonDate + '_log.csv';
+
+    fs.writeFile(global.logFile, '### Start Log ###\n', function(err){
       if (err) throw err;
       console.log('Logfile created');
     });
