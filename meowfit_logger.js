@@ -34,7 +34,7 @@ Bean.discover(function(bean){
     var now = new Date();
     var jsonDate = now.toJSON();
 
-    var data = jsonDate + ", " + diffX + ", " + diffY + ", " + diffZ + ", " + movement + ", " + tempData
+    var data = jsonDate + ", " + diffX + ", " + diffY + ", " + diffZ + ", " + movement + ", " + tempData + "\n"
 
 
     // output useful data to console
@@ -70,9 +70,9 @@ Bean.discover(function(bean){
 
     var now = new Date();
     var jsonDate = now.toJSON();
-    global.logFile = jsonDate + '_log.csv';
+    global.logFile = '/home/pi/meowfit/data/' + jsonDate + '_log.csv';
 
-    fs.writeFile(global.logFile, '### Start Log ###\n', function(err){
+    fs.writeFile(global.logFile, '', function(err){
       if (err) throw err;
       console.log('Logfile created');
     });
