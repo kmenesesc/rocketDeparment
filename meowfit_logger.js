@@ -13,6 +13,7 @@ var lastY = 0;
 var lastZ = 0;
 
 Bean.discover(function(bean){
+  console.log("Bean Discovered");
   connectedBean = bean;
 
   bean.on("accell", function(x, y, z, valid){
@@ -67,7 +68,7 @@ Bean.discover(function(bean){
   });
 
   bean.connectAndSetup(function(){
-
+    console.log("Connect and Setup")
     var now = new Date();
     var jsonDate = now.toJSON();
     global.logFile = '/home/pi/meowfit/data/' + jsonDate + '_log.csv';
